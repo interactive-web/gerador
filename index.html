@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Gerador de Senha</title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<script type="text/javascript" src="js/base64.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+<script type="text/javascript" src="js/serverfunctionexecutor.js"></script>
+<script type="text/javascript" src="js/connection.js"></script>
+<script type="text/javascript" src="<#serverfunctionsjs>"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<script type="text/javascript">
+
+var loginRequired = false;
+
+function onLoad()
+{
+  showTime();
+  loginRequired = <#loginRequired>;
+  setConnection('<#host>', '<#port>', '<#urlpath>');
+  if (loginRequired)
+  {
+    showLogin(true);
+  }
+  else
+  {
+    showLogin(false);
+  }
+}
+
+function onLogin()
+{
+  if (loginRequired)
+  {
+    if (AdminInst == null)
+    {
+        if (!setCredentials(document.getElementById('userField').value, document.getElementById('passwrdField').value))
+        {
+          loginCorrect(false);
+          return;
+        }
+        else
+        {
+          loginCorrect(true);
+          showLogin(false);
+        }
+    }
+  }
+  else
+    showLogin(false);
+}
+
+function loginCorrect(isCorrect)
+{
+  var errorDiv = document.getElementById('loginError');
+  if ( errorDiv != null )
+  {
+    errorDiv.innerHTML= isCorrect ? "" : "login incorreto";
+  }
+}
+
+function showLogin(show)
+{
+  var loginDiv = document.getElementById('logindiv');
+  var contentDiv = document.getElementById('contentdiv');
+  if (show)
+  {
+      // show div
+      loginDiv.style.display="block";
+      contentDiv.style.display="none";
+  }
+  else
+  {
+      // show div
+      loginDiv.style.display="none";
+      contentDiv.style.display="block";
+  }
+}
+
+function showTime()
+{
+  var d = new Date();
+  var h = d.getHours();
+  var m = d.getMinutes();
+  var s = d.getSeconds();
+  var timeElement = document.getElementById('timeElement');
+  if ( timeElement != null )
+  {
+    timeElement.innerText=
+      (h <= 9 ? "0" : "") + h + ":" +
+      (m <= 9 ? "0" : "") + m + ":" +
+      (s <= 9 ? "0" : "") + s;
+  }
+}
+
+function serverMethods()
+{
+  return new <#classname>(connectionInfo);
+}
+
+function onReverseStringClick()
+{
+  if (loginRequired && (AdminInst == null))
+  {
+    showLogin(true);
+    return;
+  }
+  var valueField = document.getElementById('valueField');
+  var s = serverMethods().ReverseString(valueField.value);
+  valueField.value = s.result;
+}
+
+</script>
+
+</head>
+
+<body onload="onLoad()">
+
+    <div id="form-container">
+    <div class="box-content" id="form-box">
+      <div class="topo"><img class="logo" src="./img/logo-bredas.svg"></div>
+
+
+
+
+      <!--      Login        -->
+
+       <div id="logindiv" style="display:none">
+      <h1>Faça o login</h1>
+
+        <form onsubmit="onLogin(); return false;" class="container-flex">
+        <label>Usuário</label>
+        <input id="userField" type="text" placeholder="Seu login de usuário">
+        <label>Senha</label>
+        <input id="passwrdField" type="password" placeholder="Digite sua senha">
+        <br>
+        <div id="loginError" class="errorMsg"></div>
+        <button id="loginButton" type="submit" value="LOG IN">Entrar</button>
+      </form>
+      </div>
+      
+
+
+
+
+
+
+      <!--      Gerador de Senha        -->
+
+      <div id="contentdiv" style="display:none">
+      <h1>Nova Senha</h1>
+      <div class="container-flex">
+        <label>Nova Senha</label>
+          <input id="valueField" class="loginField" type="text" value="A B C"> 
+          <br>
+          <button onclick='javascript:onReverseStringClick();'>Gerar Senha</button>
+        </div>
+
+
+
+      
+      
+    </div>
+  </div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>
